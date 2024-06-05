@@ -38,7 +38,7 @@ def main():
       chunks = text_splitter.split_text(text)
       
       # create embeddings
-      embeddings = ErnieEmbeddings(aistudio_access_token=os.environ['AISTUDIO_ACCESS_TOKEN'])
+      embeddings = ErnieEmbeddings(aistudio_access_token=os.environ.get('AISTUDIO_ACCESS_TOKEN'))
       knowledge_base = FAISS.from_texts(chunks, embeddings)
 
       
