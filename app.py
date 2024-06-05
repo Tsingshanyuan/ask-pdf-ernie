@@ -47,7 +47,7 @@ def main():
       if user_question:
         docs = knowledge_base.similarity_search(user_question)
         
-        llm = ErnieBot(aistudio_access_token=os.environ['AISTUDIO_ACCESS_TOKEN'])
+        llm = ErnieBot(aistudio_access_token=os.environ.get('AISTUDIO_ACCESS_TOKEN'))
         chain = load_qa_chain(llm, chain_type="stuff")
         with get_openai_callback() as cb:
           response = chain.run(input_documents=docs, question=user_question)
