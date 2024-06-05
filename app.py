@@ -2,11 +2,15 @@ from dotenv import load_dotenv
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
-from langchain.llms import OpenAI
+from erniebot_agent.extensions.langchain.llms import ErnieBot
 from langchain.callbacks import get_openai_callback
+from erniebot_agent.extensions.langchain.embeddings import ErnieEmbeddings
+import os
+# import getpass
+
+# access_token = getpass.getpass(prompt="Access token: " + os.environ['AISTUDIO_ACCESS_TOKEN'] + "\n")
 
 
 def main():
@@ -34,15 +38,16 @@ def main():
       chunks = text_splitter.split_text(text)
       
       # create embeddings
-      embeddings = OpenAIEmbeddings()
+      embeddings = ErnieEmbeddings(aistudio_access_token=os.environ['AISTUDIO_ACCESS_TOKEN'])
       knowledge_base = FAISS.from_texts(chunks, embeddings)
+
       
       # show user input
       user_question = st.text_input("Ask a question about your PDF:")
       if user_question:
         docs = knowledge_base.similarity_search(user_question)
         
-        llm = OpenAI()
+        llm = ErnieBot(aistudio_access_token=os.environ['AISTUDIO_ACCESS_TOKEN'])
         chain = load_qa_chain(llm, chain_type="stuff")
         with get_openai_callback() as cb:
           response = chain.run(input_documents=docs, question=user_question)
